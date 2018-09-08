@@ -1,0 +1,12 @@
+- name: create stack
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  become: no
+  vars_files:
+    - stack-nodes.yml
+  vars:
+    config_file: "{{ lookup('env', 'OS_CLIENT_CONFIG_FILE') }}"
+    ansible_port: 5986
+  roles:
+    - stack-template

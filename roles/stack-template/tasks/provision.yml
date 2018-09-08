@@ -1,0 +1,37 @@
+- name: check openstack config file
+  stat:
+    path: "{{ config_file }}"
+  register: st
+
+- name: include openstack details
+  include_vars: "{{ config_file }}"
+  when: st.stat.exists and st.stat.isreg
+
+- name: get network names
+  os_networks_facts:
+
+- name: create/update stack
+  os_stack:
+    name: "{{ stack_name | default('test_stack') }}"
+    tag: "{{ stack_name | default('test_stack') }}"
+    state: present
+    template: "{{ template_path | default('roles/stack-template/files/test-stack.yml') }}"
+    parameters:
+      public_network_id: "{{ public_network_id | default((openstack_networks |  selectattr('name', 'search', public_network_name) | list | first).id) }}"
+      private_network_id: "{{ private_network_id | default((openstack_networks |  selectattr('name', 'search', private_network_name) | list | first).id) }}"
+      key_name: "{{ key_name }}"
+      flavor: "{{ flavor }}"
+      image: "{{ image }}"
+  register: deploy
+
+- name: waiting for servers to come online
+  wait_for:
+    host: "{{ item.output_value }}"
+    port: "{{ ansible_port | default('22') }}"
+    timeout: "{{ instance_wait_connection_timeout }}"
+  with_items: "{{ deploy.stack.outputs }}"
+  when:
+    - deploy is defined
+    - deploy.stack is defined
+    - deploy.stack.outputs is defined
+    - "'public_ip' in item.output_key"

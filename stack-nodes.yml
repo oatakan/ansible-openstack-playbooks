@@ -1,0 +1,30 @@
+---
+nodes:
+  - name: windows
+    role: windows
+    app_name: stack_demo
+    flavor: m1.medium
+    image: Windows Server 2016
+    key_name: ansible-oatakan
+    volume_size: 40
+    nics:
+      - net-name: private_network
+    os_type: windows
+  - name: centos
+    role: linux
+    app_name: stack_demo
+    flavor: m1.small
+    image: CentOS 7 1808
+    key_name: ansible-oatakan
+    volume_size: 20
+    nics:
+      - net-name: private_network
+  - name: rhel
+    role: linux
+    app_name: stack_demo
+    flavor: m1.small
+    image: RHEL 7.5
+    key_name: ansible-oatakan
+    volume_size: 20
+    nics:
+      - net-name: private_network

@@ -1,0 +1,14 @@
+---
+
+role_action: provision
+
+stack_name: test_stack
+public_network_name: public
+private_network_name: private
+key_name: key
+flavor: m1.medium
+image: windows
+
+instance_wait_retry_limit: 300
+instance_wait_connection_timeout: 300
+

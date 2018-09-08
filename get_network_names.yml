@@ -1,0 +1,27 @@
+- name: get network names
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  become: no
+  vars:
+    config_file: "{{ lookup('env', 'OS_CLIENT_CONFIG_FILE') }}"
+  tasks:
+    - name: check openstack config file
+      stat: path="{{ config_file }}"
+      register: st
+
+    - name: include openstack details
+      include_vars: "{{ config_file }}"
+      when: st.stat.exists and st.stat.isreg
+
+    - name: get network names
+      os_networks_facts:
+
+    - debug:
+        var: openstack_networks
+
+    - debug:
+        msg: "{{ (openstack_networks |  selectattr('name', 'search', 'private_network') | list | first).name }}"
+
+    - debug:
+        msg: "{{ (openstack_networks |  selectattr('name', 'search', 'private_network') | list | first).id }}"
